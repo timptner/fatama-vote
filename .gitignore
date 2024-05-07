@@ -10,3 +10,6 @@ instance/
 # Python
 *.pyc
 __pycache__/
+
+# Zed
+.zed
