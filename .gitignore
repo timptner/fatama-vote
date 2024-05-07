@@ -3,6 +3,7 @@
 
 # Flask
 instance/
+vote/static/weight.svg
 
 # PyCharm
 .idea/

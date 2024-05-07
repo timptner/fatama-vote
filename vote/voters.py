@@ -63,7 +63,7 @@ def plot_weight_curve() -> None:
     ax.set_ylabel("Stimmen")
 
     click.echo(click.style("Diagram erstellt.", fg="green"))
-    file = BASE_DIR / "instance" / "weight.svg"
+    file = BASE_DIR / "vote" / "static" / "weight.svg"
     fig.savefig(file, format="svg")
 
 
