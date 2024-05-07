@@ -25,26 +25,118 @@
     </article>
 
     {% for poll in polls %}
-        <div class="block">
-            <p><a href="{{ url_for('polls.vote', poll_id=poll.id) }}">{{ poll.subject }}</a></p>
-            <span class="icon-text">
-                <span class="icon">
-                    <i class="fa-solid fa-clock"></i>
-                </span>
-                <span class="mr-3"><time datetime="{{ poll.created }}">{{ poll.created.strftime("%c") }}</time> Uhr</span>
+        <div class="box">
+            <div class="buttons is-pulled-right">
+                {% if g.user %}
+                    <a class="button is-link is-light" href="{{ url_for('polls.state', poll_id=poll.id) }}">Status ändern</a>
+                {% endif %}
+                <a class="button is-link" href="{{ url_for('polls.vote', poll_id=poll.id) }}"{% if poll.state != "Offen" %} disabled{% endif %}>Abstimmen</a>
+            </div>
 
-                <span class="icon">
-                    <i class="fa-solid fa-user"></i>
-                </span>
-                <span>{{ poll.username }}</span>
+            {% if poll.state == "Gelöscht" %}
+                <h4 class="title is-4 has-text-danger"><del>{{ poll.subject }}<del></h4>
+            {% else %}
+                <h4 class="title is-4">{{ poll.subject }}</h4>
+            {% endif %}
 
-                <span class="icon">
-                    <i class="fa-solid fa-gear"></i>
-                </span>
-                <span>{{ poll.type }}</span>
-            </span>
+            <div class="field is-grouped">
+                <div class="control">
+                    <span class="tags has-addons">
+                        <span class="tag is-dark">
+                            <span class="icon">
+                                <i class="fa-solid fa-clock"></i>
+                            </span>
+                        </span>
+                        <span class="tag">
+                            <time datetime="{{ poll.created }}">{{ poll.created }}</time>
+                        </span>
+                    </span>
+                </div>
+
+                <div class="control">
+                    <span class="tags has-addons">
+                        <span class="tag is-dark">
+                            <span class="icon">
+                                <i class="fa-solid fa-user"></i>
+                            </span>
+                        </span>
+                        <span class="tag">{{ poll.username }}</span>
+                    </span>
+                </div>
+
+                <div class="control">
+                    <span class="tags has-addons">
+                        <span class="tag is-dark">
+                            <span class="icon">
+                                <i class="fa-solid fa-gear"></i>
+                            </span>
+                        </span>
+                        <span class="tag">
+                            <span>{{ poll.type }}</span>
+                        </span>
+                    </span>
+                </div>
+
+                <div class="control">
+                    <span class="tags has-addons">
+                        <span class="tag is-dark">
+                            <span class="icon">
+                                <i class="fa-solid fa-bars-progress"></i>
+                            </span>
+                        </span>
+                        {% if poll.state == "Vorbereitet" %}
+                            <span class="tag is-warning">
+                                <span>{{ poll.state }}</span>
+                            </span>
+                        {% elif poll.state == "Offen" %}
+                            <span class="tag is-success">
+                                <span>{{ poll.state }}</span>
+                            </span>
+                        {% elif poll.state == "Geschlossen" %}
+                            <span class="tag is-danger">
+                                <span>{{ poll.state }}</span>
+                            </span>
+                        {% else %}
+                            <span class="tag">
+                                <span>{{ poll.state }}</span>
+                            </span>
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+
+            {% if poll.state == "Geschlossen" %}
+                <h5 class="title is-5">Ergebnis</h5>
+                <table class="table is-fullwidth">
+                    <thead>
+                        <tr>
+                            <th>Option</th>
+                            <th>Stimmen</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if poll.type == "Namentlich" %}
+                            {% for key, value in results[poll.id].items() %}
+                                <tr>
+                                    <td>{{ key }}</td>
+                                    <td>{{ value|join(", ") }}</td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            {% for result in results[poll.id] %}
+                                <tr>
+                                    <td>{{ result.name }}</td>
+                                    <td>{{ result.count|default(0, true) }}</td>
+                                </tr>
+                            {% endfor %}
+                        {% endif %}
+                    </tbody>
+                </table>
+            {% endif %}
         </div>
-        {% else %}
-        <p>Keine Abstimmungen verfügbar.</p>
+    {% else %}
+        <div class="box has-text-centered">
+            Keine Abstimmungen verfügbar.
+        </div>
     {% endfor %}
 {% endblock content %}

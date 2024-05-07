@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h3 class="title">{% block title %}Status ändern{% endblock %}</h3>
+<h5 class="subtitle">{{ poll.subject }}</h5>
+
+<article class="message is-info">
+    <div class="message-header">
+        <p>Reihenfolge der Status-Änderungen</p>
+    </div>
+    <div class="message-body">
+        <div class="content">
+            <p>
+                Der Status kann nicht beliebig verändert werden. Es sind lediglich folgende Änderungen
+                möglich.
+            </p>
+
+            <ul>
+                <li>
+                    <span class="icon-text">
+                        <span>Vorbereitet</span>
+                        <span class="icon">
+                            <i class="fa-solid fa-right-long"></i>
+                        </span>
+                        <span>Offen</span>
+                        <span class="icon">
+                            <i class="fa-solid fa-right-long"></i>
+                        </span>
+                        <span>Geschlossen</span>
+                    </span>
+                </li>
+
+                <li>
+                    <span class="icon-text">
+                        <span>Vorbereitet</span>
+                        <span class="icon">
+                            <i class="fa-solid fa-right-long"></i>
+                        </span>
+                        <span>Gelöscht</span>
+                    </span>
+                </li>
+
+                <li>
+                    <span class="icon-text">
+                        <span>Vorbereitet</span>
+                        <span class="icon">
+                            <i class="fa-solid fa-right-long"></i>
+                        </span>
+                        <span>Offen</span>
+                        <span class="icon">
+                            <i class="fa-solid fa-right-long"></i>
+                        </span>
+                        <span>Gelöscht</span>
+                    </span>
+                </li>
+
+                <li>
+                    <span class="icon-text">
+                        <span>Vorbereitet</span>
+                        <span class="icon">
+                            <i class="fa-solid fa-right-long"></i>
+                        </span>
+                        <span>Offen</span>
+                        <span class="icon">
+                            <i class="fa-solid fa-right-long"></i>
+                        </span>
+                        <span>Geschlossen</span>
+                        <span class="icon">
+                            <i class="fa-solid fa-right-long"></i>
+                        </span>
+                        <span>Gelöscht</span>
+                    </span>
+                </li>
+            </ul>
+
+            <p>
+                Es ist hierbei anzumerken, dass lediglich im Status "Geschlossen" die Ergebnisse der
+                Abstimmung einsehbar sind. Es sollten lediglich Abstimmungen als "Gelöscht" markiert werden,
+                welche rückwirkend als ungültig anzusehen sind.
+            </p>
+        </div>
+    </div>
+</article>
+
+<form method="post">
+    <div class="field">
+        <label class="label">Status</label>
+
+        <div class="control">
+            {% for state in states %}
+                <label class="radio">
+                    <input type="radio" name="state" id="state" value="{{ state }}"{% if state == poll.state %} checked{% endif %} />
+                    {{ state }}
+                </label>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="field is-grouped">
+        <div class="control">
+            <button class="button is-link" type="submit">Ändern</button>
+        </div>
+        <div class="control">
+            <a class="button is-link is-light" href="{{ url_for('polls.index') }}">Abbrechen</a>
+        </div>
+    </div>
+</form>
+{% endblock content %}

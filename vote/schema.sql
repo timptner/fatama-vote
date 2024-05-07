@@ -17,8 +17,10 @@ CREATE TABLE polls (
     created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     subject TEXT NOT NULL,
     type TEXT NOT NULL DEFAULT "Einfach",
+    state TEXT NOT NULL DEFAULT "Vorbereitet",
     FOREIGN KEY (author_id) REFERENCES users (id),
     CONSTRAINT type_choices CHECK (type IN ("Einfach", "Namentlich", "Gewichtet", "Geheim")),
+    CONSTRAINT state_choices CHECK (state IN ("Vorbereitet", "Offen", "Geschlossen", "Gelöscht"))
 );
 
 CREATE TABLE choices (
@@ -31,7 +33,6 @@ CREATE TABLE choices (
 CREATE TABLE ballots (
     choice_id INTEGER NOT NULL,
     voter_id INTEGER NOT NULL,
-    is_weighted BOOLEAN NOT NULL DEFAULT FALSE,
     created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (choice_id) REFERENCES choices (id),
     FOREIGN KEY (voter_id) REFERENCES tokens (id),

@@ -10,6 +10,7 @@ from flask import (
 )
 from werkzeug.exceptions import abort
 
+from vote import database
 from vote.authentication import login_required
 from vote.database import get_database
 
@@ -20,11 +21,53 @@ blueprint = Blueprint("polls", __name__)
 def index() -> str:
     database = get_database()
     polls = database.execute(
-        "SELECT polls.id, subject, created, author_id, username, type"
-        " FROM polls JOIN users ON polls.author_id = users.id"
+        "SELECT polls.id, subject, author_id, created, state, type, username"
+        " FROM polls"
+        " JOIN users ON polls.author_id = users.id"
         " ORDER BY created DESC"
     ).fetchall()
-    return render_template("polls/index.html", polls=polls)
+
+    results = {}
+    for poll in polls:
+        poll_id = poll["id"]
+        if poll["type"] == "Namentlich":
+            data = database.execute(
+                "SELECT choices.name, voters.name"
+                " FROM ballots"
+                " RIGHT JOIN choices ON ballots.choice_id = choices.id"
+                " LEFT JOIN voters ON ballots.voter_id = voters.id"
+                " WHERE choices.poll_id = ?",
+                (poll_id,),
+            ).fetchall()
+            result = {}
+            for item in data:
+                choice_name = item[0]
+                voter_name = item[1]
+                if choice_name not in result.keys():
+                    result[choice_name] = []
+                result[choice_name].append(voter_name)
+        elif poll["type"] == "Gewichtet":
+            result = database.execute(
+                "SELECT choices.name, SUM(voters.weight) as count"
+                " FROM ballots"
+                " RIGHT JOIN choices ON ballots.choice_id = choices.id"
+                " LEFT JOIN voters ON ballots.voter_id = voters.id"
+                " WHERE choices.poll_id = ?"
+                " GROUP BY choices.name",
+                (poll_id,),
+            ).fetchall()
+        else:
+            result = database.execute(
+                "SELECT choices.name, COUNT(ballots.voter_id) AS count"
+                " FROM ballots"
+                " RIGHT JOIN choices ON ballots.choice_id = choices.id"
+                " WHERE choices.poll_id = ?"
+                " GROUP BY choices.name",
+                (poll_id,),
+            ).fetchall()
+        results[poll_id] = result
+
+    return render_template("polls/index.html", polls=polls, results=results)
 
 
 @blueprint.route("/create/", methods=("GET", "POST"))
@@ -92,6 +135,64 @@ def create() -> str | Response:
     return render_template("polls/create.html", validation=validation)
 
 
+@blueprint.route("/<int:poll_id>/state/", methods=("GET", "POST"))
+@login_required
+def state(poll_id: int) -> str | Response:
+    state_choices = ("Vorbereitet", "Offen", "Geschlossen", "Gelöscht")
+
+    database = get_database()
+    poll = database.execute(
+        "SELECT * FROM polls WHERE polls.id = ?",
+        (poll_id,),
+    ).fetchone()
+
+    if poll is None:
+        abort(404, f"Poll with ID {poll_id} does not exist.")
+
+    if request.method == "POST":
+        state = request.form["state"]
+
+        error = None
+
+        if not state:
+            error = "Status wird benötigt."
+
+        if state not in state_choices:
+            error = f"Status kann nur {state_choices} sein."
+
+        current_state = poll["state"]
+        valid_transition = True
+
+        if current_state == "Vorbereitet":
+            if state not in ("Offen", "Gelöscht"):
+                valid_transition = False
+        elif current_state == "Offen":
+            if state not in ("Geschlossen", "Gelöscht"):
+                valid_transition = False
+        elif current_state == "Geschlossen":
+            if state != "Gelöscht":
+                valid_transition = False
+        elif current_state == "Gelöscht":
+            valid_transition = False
+        else:
+            abort(500, "Unknown poll state.")
+
+        if not valid_transition:
+            error = f"Der Wechsel von {current_state} nach {state} ist nicht möglich."
+
+        if error is not None:
+            flash(error)
+        else:
+            database.execute(
+                "UPDATE polls SET state = ? WHERE polls.id = ?",
+                (state, poll_id),
+            )
+            database.commit()
+            return redirect(url_for("polls.index"))
+
+    return render_template("polls/state.html", poll=poll, states=state_choices)
+
+
 @blueprint.route("/<int:poll_id>/vote/", methods=("GET", "POST"))
 def vote(poll_id: int) -> str | Response:
     database = get_database()
@@ -103,6 +204,9 @@ def vote(poll_id: int) -> str | Response:
 
     if poll is None:
         abort(404, f"Poll with ID {poll_id} does not exist.")
+
+    if poll["state"] != "Offen":
+        abort(403, f"Poll with ID {poll_id} is not available for voting.")
 
     choices = database.execute(
         "SELECT * FROM choices WHERE poll_id = ?",
@@ -119,7 +223,7 @@ def vote(poll_id: int) -> str | Response:
             error = "Token wird benötigt."
 
         data = database.execute(
-            "SELECT expired, voters.id, name, weight FROM tokens"
+            "SELECT expired, voters.id, name FROM tokens"
             " JOIN voters ON tokens.voter_id = voters.id WHERE key = ?",
             (token_id,),
         ).fetchone()
@@ -130,7 +234,6 @@ def vote(poll_id: int) -> str | Response:
             voter = {
                 "id": data["id"],
                 "name": data["name"],
-                "weight": data["weight"],
             }
 
             if poll["type"] == "Geheim" and voter["name"]:
@@ -162,10 +265,9 @@ def vote(poll_id: int) -> str | Response:
         if error is not None:
             flash(error)
         else:
-            is_weighted = poll["type"] == "Gewichtet"
             database.execute(
-                "INSERT INTO ballots (choice_id, voter_id, is_weighted) VALUES (?, ?, ?)",
-                (choice_id, voter["id"], is_weighted),
+                "INSERT INTO ballots (choice_id, voter_id) VALUES (?, ?)",
+                (choice_id, voter["id"]),
             )
             database.execute(
                 "UPDATE tokens SET expired = TRUE WHERE key = ?",
