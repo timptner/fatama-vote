@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>{% block title %}{% endblock %} - FaTaMa Vote</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css" type="text/css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='fontawesomefree/css/fontawesome.min.css') }}" type="text/css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='fontawesomefree/css/solid.min.css') }}" type="text/css" />
+</head>
+
+<body>
+<nav class="navbar" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <div class="navbar-item">Vote</div>
+
+            <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarMain">
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+            </a>
+        </div>
+
+        <div id="navbarMain" class="navbar-menu">
+            <div class="navbar-start">
+                <a class="navbar-item" href="{{ url_for('index') }}">
+                    Abstimmungen
+                </a>
+
+                {% if g.user %}
+                <a class="navbar-item" href="{{ url_for('voters.index') }}">
+                    Wähler
+                </a>
+                {% endif %}
+            </div>
+
+            <div class="navbar-end">
+                {% if g.user %}
+                <a class="navbar-item" href="{{ url_for('auth.logout') }}">
+                    Abmelden
+                </a>
+                {% else %}
+                <a class="navbar-item" href="{{ url_for('auth.login') }}">
+                    Anmelden
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</nav>
+
+{% if get_flashed_messages() %}
+<section class="section">
+    <div class="container">
+        {% for message in get_flashed_messages() %}
+        <div class="notification is-danger">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+<section class="section">
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+</section>
+
+<script src="{{ url_for('static', filename='navbar.js') }}"></script>
+</body>
+</html>

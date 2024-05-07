@@ -1,0 +1,12 @@
+# Dependencies
+.venv/
+
+# Flask
+instance/
+
+# PyCharm
+.idea/
+
+# Python
+*.pyc
+__pycache__/

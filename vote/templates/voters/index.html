@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Wähler{% endblock %}
+
+{% block content %}
+<div class="block is-clearfix">
+    <a class="button is-link is-pulled-right" href="{{ url_for('voters.create') }}">Neuer Wähler</a>
+</div>
+
+<table class="table is-fullwidth">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for voter in voters %}
+    <tr>
+        <th>{{ voter.id }}</th>
+        <td>{% if voter.name %}{{ voter.name }}{% else %}<em>Anonym</em>{% endif %}</td>
+    </tr>
+    {% else %}
+    <tr>
+        <td colspan="2">Keine Wähler vorhanden.</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

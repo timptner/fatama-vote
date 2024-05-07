@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Abstimmungen{% endblock %}
+
+{% block content %}
+{% if g.user %}
+<div class="clearfix">
+    <a class="button is-link is-pulled-right" href="{{ url_for('polls.create') }}">Neue Abstimmung</a>
+</div>
+{% endif %}
+
+{% for poll in polls %}
+<div class="block">
+    <p><a href="{{ url_for('polls.vote', pk=poll.id) }}">{{ poll.subject }}</a></p>
+    <span class="icon-text">
+        <span class="icon">
+            <i class="fa-solid fa-clock"></i>
+        </span>
+        <span class="mr-3"><time datetime="{{ poll.created }}">{{ poll.created.strftime("%c") }}</time> Uhr</span>
+        <span class="icon">
+            <i class="fa-solid fa-user"></i>
+        </span>
+        <span> {{ poll.username }}</span>
+    </span>
+</div>
+{% else %}
+<p>Keine Abstimmungen verfügbar.</p>
+{% endfor %}
+
+{% endblock %}

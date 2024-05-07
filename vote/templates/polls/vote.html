@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Stimme abgeben{% endblock %}
+
+{% block content %}
+<h3 class="title">{{ poll.subject }}</h3>
+
+<form method="post">
+    <div class="field">
+        <label class="label" for="token">Token</label>
+
+        <div class="control">
+            <input class="input" type="text" name="token" id="token" required/>
+        </div>
+    </div>
+
+    <div class="field">
+        <label class="label" for="choices">Optionen</label>
+
+        <div class="control" id="choices">
+            {% for choice in choices %}
+            <div>
+                <label class="radio">
+                    <input type="radio" name="choice" value="{{ choice.id }}" required/>
+                    {{ choice.name }}
+                </label>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="field is-grouped">
+        <div class="control">
+            <button class="button is-link" type="submit">Abstimmen</button>
+        </div>
+        <div class="control">
+            <a class="button is-link is-light" href="{{ url_for('index') }}">Abbrechen</a>
+        </div>
+    </div>
+</form>
+{% endblock %}

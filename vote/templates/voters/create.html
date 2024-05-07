@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h3 class="title">{% block title %}Neuer Wähler{% endblock %}</h3>
+
+<form method="post">
+    <div class="field">
+        <label class="label" for="name">Name</label>
+
+        <div class="control">
+            <input class="input" type="text" name="name" id="name" maxlength="{{ validation.name_max }}" />
+        </div>
+
+        <p class="help">Für ein anonymes Konto bitte freilassen.</p>
+    </div>
+
+    <div class="field">
+        <label class="label" for="weight">Gewichtung</label>
+
+        <div class="control">
+            <input class="input" type="number" name="weight" id="weight" value="1" min="{{ validation.weight_min }}" max="{{ validation.weight_max }}" required />
+        </div>
+    </div>
+
+    <div class="field is-grouped">
+        <div class="control">
+            <button class="button is-link" type="submit">Erstellen</button>
+        </div>
+        <div class="control">
+            <a class="button is-link is-light" href="{{ url_for('voters.index') }}">Abbrechen</a>
+        </div>
+    </div>
+</form>
+{% endblock %}
