@@ -71,27 +71,29 @@ def plot_weight_curve() -> None:
 @login_required
 def create() -> str | Response:
     name_max_length = 250
-    weight_min_amount = 1
-    weight_max_amount = 20
+    students_min = 1
 
     if request.method == "POST":
-        name = request.form["name"] or ""
-        name = name.strip()
-        weight = int(request.form["weight"])
+        name = request.form.get("name", "").strip()
+        students = int(request.form["students"])
 
         error = None
 
         if len(name) > name_max_length:
             error = f"Name darf maximal {name_max_length} Zeichen lang sein."
 
-        if weight < weight_min_amount:
-            error = f"Die Gewichtung muss mindestens {weight_min_amount} betragen."
-        if weight > weight_max_amount:
-            error = f"Die Gewichtung darf maximal {weight_max_amount} betragen."
+        if students < students_min:
+            error = (
+                f"Die Anzahl der Studierende muss mindestens {students_min} betragen."
+            )
+
+        if name == "" and students != 1:
+            error = "Anonyme Wähler können keine Studierenden haben. (Studierende muss Wert 1 haben.)"
 
         if error is not None:
             flash(error)
         else:
+            weight = get_weight(students)
             database = get_database()
             database.execute(
                 "INSERT INTO voters (name, weight) VALUES (?, ?)",
@@ -102,7 +104,6 @@ def create() -> str | Response:
 
     validation = {
         "name_max": name_max_length,
-        "weight_min": weight_min_amount,
-        "weight_max": weight_max_amount
+        "students_min": students_min,
     }
     return render_template("voters/create.html", validation=validation)

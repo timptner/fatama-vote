@@ -1,34 +1,61 @@
 {% extends "base.html" %}
-
 {% block content %}
-<h3 class="title">{% block title %}Neuer Wähler{% endblock %}</h3>
-
-<form method="post">
-    <div class="field">
-        <label class="label" for="name">Name</label>
-
-        <div class="control">
-            <input class="input" type="text" name="name" id="name" maxlength="{{ validation.name_max }}" />
+    <h3 class="title">
+        {% block title %}
+            Neuer Wähler
+        {% endblock title %}
+    </h3>
+    <div class="columns">
+        <div class="column">
+            <article class="message is-info">
+                <div class="message-header">
+                    <p>Gewichtung</p>
+                </div>
+                <div class="message-body">
+                    <p class="mb-3">Die Gewichtung wird anhand der Anzahl Studierender berechnet.</p>
+                    <figure class="image is-16by9">
+                        <img src="{{ url_for('static', filename='weight.svg') }}"
+                             alt="Gewichtung"
+                             height="100%"
+                             width="100%" />
+                    </figure>
+                </div>
+            </article>
         </div>
-
-        <p class="help">Für ein anonymes Konto bitte freilassen.</p>
+        <div class="column">
+            <form method="post">
+                <div class="field">
+                    <label class="label" for="name">Name</label>
+                    <div class="control">
+                        <input class="input"
+                               type="text"
+                               name="name"
+                               id="name"
+                               maxlength="{{ validation.name_max }}" />
+                    </div>
+                    <p class="help">Für ein anonymes Konto bitte freilassen.</p>
+                </div>
+                <div class="field">
+                    <label class="label" for="students">Studierende</label>
+                    <div class="control">
+                        <input class="input"
+                               type="number"
+                               name="students"
+                               id="students"
+                               value="1"
+                               min="{{ validation.students_min }}"
+                               required />
+                    </div>
+                </div>
+                <div class="field is-grouped">
+                    <div class="control">
+                        <button class="button is-link" type="submit">Erstellen</button>
+                    </div>
+                    <div class="control">
+                        <a class="button is-link is-light" href="{{ url_for("voters.index") }}">Abbrechen</a>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
-
-    <div class="field">
-        <label class="label" for="weight">Gewichtung</label>
-
-        <div class="control">
-            <input class="input" type="number" name="weight" id="weight" value="1" min="{{ validation.weight_min }}" max="{{ validation.weight_max }}" required />
-        </div>
-    </div>
-
-    <div class="field is-grouped">
-        <div class="control">
-            <button class="button is-link" type="submit">Erstellen</button>
-        </div>
-        <div class="control">
-            <a class="button is-link is-light" href="{{ url_for('voters.index') }}">Abbrechen</a>
-        </div>
-    </div>
-</form>
-{% endblock %}
+{% endblock content %}
