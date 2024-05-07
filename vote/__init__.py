@@ -29,7 +29,8 @@ def create_app(test_config=None) -> Flask:
 
     from . import maintenance
 
-    maintenance.add_maintenance_commands(application)
+    application.cli.add_command(maintenance.create_user)
+    application.cli.add_command(maintenance.create_code)
 
     from . import authentication
 

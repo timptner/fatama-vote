@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h3 class="title">
+        {% block title %}
+            Tokens generieren
+        {% endblock title %}
+    </h3>
+
+    {% if has_tokens %}
+        <article class="message is-danger">
+            <div class="message-header">
+                <p>Gültige Tokens vorhanden</p>
+            </div>
+            <div class="message-body">
+                Der Wähler hat noch gültige Token übrig. Wird ein neuer Tokensatz generiert werden
+                die bisherigen Token ungültig gemacht.
+            </div>
+        </article>
+    {% endif %}
+
+    <article class="message is-info">
+        <div class="message-header">
+            <p>Information</p>
+        </div>
+        <div class="message-body">Zum Generieren eines neuen Tokensatzes die Anzahl der benötigen Tokens eingeben.</div>
+    </article>
+
+    <form method="post">
+        <div class="field">
+            <label class="label" for="amount">Anzahl</label>
+            <div class="control">
+                <input class="input"
+                       type="number"
+                       name="amount"
+                       id="amount"
+                       value="30"
+                       min="{{ validation.amount_min }}"
+                       max="{{ validation.amount_max }}"
+                       required />
+            </div>
+        </div>
+        <div class="field is-grouped">
+            <div class="control">
+                <button class="button is-link" type="submit">Generieren</button>
+            </div>
+            <div class="control">
+                <a class="button is-link is-light" href="{{ url_for('voters.index',) }}">Abbrechen</a>
+            </div>
+        </div>
+    </form>
+{% endblock content %}

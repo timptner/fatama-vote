@@ -3,3 +3,4 @@ click~=8.1.7
 werkzeug~=3.0.2
 fontawesomefree~=6.5.1
 matplotlib~=3.8.4
+segno~=1.6.1

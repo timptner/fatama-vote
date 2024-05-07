@@ -1,30 +1,50 @@
 {% extends "base.html" %}
 
-{% block title %}Abstimmungen{% endblock %}
+{% block meta %}
+    {{ super() }}
+    <meta http-equiv="refresh" content="30" />
+{% endblock meta %}
 
 {% block content %}
-{% if g.user %}
-<div class="clearfix">
-    <a class="button is-link is-pulled-right" href="{{ url_for('polls.create') }}">Neue Abstimmung</a>
-</div>
-{% endif %}
+    <h3 class="title">{% block title %}Abstimmungen{% endblock %}</h3>
 
-{% for poll in polls %}
-<div class="block">
-    <p><a href="{{ url_for('polls.vote', pk=poll.id) }}">{{ poll.subject }}</a></p>
-    <span class="icon-text">
-        <span class="icon">
-            <i class="fa-solid fa-clock"></i>
-        </span>
-        <span class="mr-3"><time datetime="{{ poll.created }}">{{ poll.created.strftime("%c") }}</time> Uhr</span>
-        <span class="icon">
-            <i class="fa-solid fa-user"></i>
-        </span>
-        <span> {{ poll.username }}</span>
-    </span>
-</div>
-{% else %}
-<p>Keine Abstimmungen verfügbar.</p>
-{% endfor %}
+    {% if g.user %}
+        <div class="block is-clearfix">
+                <a class="button is-link is-pulled-right" href="{{ url_for('polls.create') }}">Neue Abstimmung</a>
+        </div>
+    {% endif %}
 
-{% endblock %}
+    <article class="message is-info">
+        <div class="message-header">
+            <p>Automatische Aktualisierung</p>
+        </div>
+        <div class="message-body">
+            Diese Seite wird automatisch alle 30 Sekunden aktualisiert. Du brauchst also nicht
+            <code>F5</code> smashen, sobald eine neue Abstimmungen eingestellt wird.
+        </div>
+    </article>
+
+    {% for poll in polls %}
+        <div class="block">
+            <p><a href="{{ url_for('polls.vote', poll_id=poll.id) }}">{{ poll.subject }}</a></p>
+            <span class="icon-text">
+                <span class="icon">
+                    <i class="fa-solid fa-clock"></i>
+                </span>
+                <span class="mr-3"><time datetime="{{ poll.created }}">{{ poll.created.strftime("%c") }}</time> Uhr</span>
+
+                <span class="icon">
+                    <i class="fa-solid fa-user"></i>
+                </span>
+                <span>{{ poll.username }}</span>
+
+                <span class="icon">
+                    <i class="fa-solid fa-gear"></i>
+                </span>
+                <span>{{ poll.type }}</span>
+            </span>
+        </div>
+        {% else %}
+        <p>Keine Abstimmungen verfügbar.</p>
+    {% endfor %}
+{% endblock content %}

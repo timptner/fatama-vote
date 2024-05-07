@@ -3,32 +3,36 @@
 {% block title %}Anmelden{% endblock %}
 
 {% block content %}
-<form method="post">
+<div class="columns is-centered">
+    <div class="column is-one-third">
+        <form method="post">
 
-    <div class="field">
-        <label class="label" for="username">Benutzername</label>
+            <div class="field">
+                <label class="label" for="username">Benutzername</label>
 
-        <div class="control">
-            <input class="input" type="text" name="username" id="username" required />
-        </div>
+                <div class="control">
+                    <input class="input" type="text" name="username" id="username" required />
+                </div>
+            </div>
+
+            <div class="field">
+                <label class="label" for="password">Passwort</label>
+
+                <div class="control">
+                    <input class="input" type="password" name="password" id="password" required />
+                </div>
+            </div>
+
+            <div class="field is-grouped">
+                <div class="control">
+                    <button class="button is-link" type="submit">Anmelden</button>
+                </div>
+                <div class="control">
+                    <a class="button is-link is-light" href="{{ url_for('index') }}">Abbrechen</a>
+                </div>
+            </div>
+
+        </form>
     </div>
-
-    <div class="field">
-        <label class="label" for="password">Passwort</label>
-
-        <div class="control">
-            <input class="input" type="password" name="password" id="password" required />
-        </div>
-    </div>
-
-    <div class="field is-grouped">
-        <div class="control">
-            <button class="button is-link" type="submit">Anmelden</button>
-        </div>
-        <div class="control">
-            <a class="button is-link is-light" href="{{ url_for('index') }}">Abbrechen</a>
-        </div>
-    </div>
-
-</form>
+</div>
 {% endblock %}

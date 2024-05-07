@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="de">
+
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+        <title>Transaktionsliste</title>
+
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css" type="text/css" />
+        <link rel="stylesheet" href="{{ url_for('static', filename='fontawesomefree/css/fontawesome.min.css') }}" type="text/css" />
+        <link rel="stylesheet" href="{{ url_for('static', filename='fontawesomefree/css/solid.min.css') }}" type="text/css" />
+    </head>
+
+    <body>
+        <section class="section">
+            <div class="container is-max-desktop">
+                <h3 class="title mb-2">Transaktionsliste</h3>
+
+                <div class="block">
+                    <div class="field is-grouped">
+                        <div class="control">
+                            <div class="tags has-addons">
+                                <span class="tag is-dark">
+                                    <span class="icon">
+                                        <i class="fa-solid fa-id-badge"></i>
+                                    </span>
+                                </span>
+                                <span class="tag">{{ voter.id }}</span>
+                            </div>
+                        </div>
+
+                        <div class="control">
+                            <div class="tags has-addons">
+                                <span class="tag is-dark">
+                                    <span class="icon">
+                                        <i class="fa-solid fa-user"></i>
+                                    </span>
+                                </span>
+                                <span class="tag">{{ voter.name }}</span>
+                            </div>
+                        </div>
+
+                        <div class="control">
+                            <div class="tags has-addons">
+                                <span class="tag is-dark">
+                                    <span class="icon">
+                                        <i class="fa-solid fa-clock"></i>
+                                    </span>
+                                </span>
+                                <span class="tag">{{ created }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <article class="message">
+                    <div class="message-header">
+                        Hinweis zur Verwendung
+                    </div>
+                    <div class="message-body">
+                        <div class="columns">
+                            <div class="column">
+                                Diese Liste wird zur Abstimmung auf
+                                <span class="is-family-monospace has-text-link">vote.fatama2024.de</span>
+                                benötigt und ist <strong>vertraulich</strong> zu behandeln. Jeder
+                                Token kann nur <strong>einmalig</strong> verwendet werden. Bei Verlust
+                                oder Diebstahl der Liste ist dies umgehend den Veranstaltern anzuzeigen,
+                                um die Tokens zu sperren und eine unerlaubte Benutzung der Tokens durch
+                                Dritte auszuschließen.
+                            </div>
+
+                            <div class="column is-one-quarter">
+                                <figure class="image is-square">
+                                    <img src="{{ url_for('static', filename='code.png') }}"
+                                        alt="https://vote.fatama2024.de" width="500" height="500" />
+                                </figure>
+                            </div>
+                        </div>
+                    </p>
+                </article>
+
+                <div class="block">
+                    <div class="columns is-multiline">
+                        {% for token in tokens %}
+                            <div class="column is-one-fifth has-text-centered is-family-monospace">
+                                {% if token.expired %}
+                                <p class="has-text-danger"><del>{{ token.key }}</del></p>
+                                {% else %}
+                                <p>{{ token.key }}</p>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </section>
+    </body>
+</html>

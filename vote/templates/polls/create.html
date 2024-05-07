@@ -24,6 +24,19 @@
         </p>
     </div>
 
+    <div class="field">
+        <label class="label" for="type">Variante</label>
+
+        <div class="control">
+            {% for type in validation.type_choices %}
+                <label class="radio">
+                    <input type="radio" name="type" id="type" value="{{ type }}"{% if loop.first %} checked{% endif %} />
+                    {{ type }}
+                </label>
+            {% endfor %}
+        </div>
+    </div>
+
     <div class="field is-grouped">
         <div class="control">
             <button class="button is-link" type="submit">Erstellen</button>
@@ -33,4 +46,4 @@
         </div>
     </div>
 </form>
-{% endblock %}
+{% endblock content %}

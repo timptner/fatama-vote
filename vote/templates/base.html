@@ -2,8 +2,10 @@
 <html lang="de">
 
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {% block meta %}
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {% endblock meta %}
 
     <title>{% block title %}{% endblock %} - FaTaMa Vote</title>
 
@@ -16,7 +18,7 @@
 <nav class="navbar" role="navigation" aria-label="main navigation">
     <div class="container">
         <div class="navbar-brand">
-            <div class="navbar-item">Vote</div>
+            <div class="navbar-item"><strong>Vote</strong></div>
 
             <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarMain">
                 <span aria-hidden="true"></span>
@@ -54,20 +56,16 @@
     </div>
 </nav>
 
-{% if get_flashed_messages() %}
 <section class="section">
     <div class="container">
-        {% for message in get_flashed_messages() %}
-        <div class="notification is-danger">
-            {{ message }}
-        </div>
-        {% endfor %}
-    </div>
-</section>
-{% endif %}
+        {% if get_flashed_messages() %}
+                {% for message in get_flashed_messages() %}
+                <div class="notification is-danger">
+                    {{ message }}
+                </div>
+                {% endfor %}
+        {% endif %}
 
-<section class="section">
-    <div class="container">
         {% block content %}{% endblock content %}
     </div>
 </section>

@@ -1,9 +1,11 @@
 import click
 import string
+import segno
 
 from werkzeug.security import generate_password_hash
 
 from vote.database import get_database
+from vote.voters import BASE_DIR
 
 
 @click.command("create-user")
@@ -51,5 +53,10 @@ def create_user(username: str, password: str) -> None:
     click.echo(click.style(f"User '{username}' created", fg="green"))
 
 
-def add_maintenance_commands(application) -> None:
-    application.cli.add_command(create_user)
+@click.command("create-code")
+@click.option("--text", prompt=True)
+@click.option("--name", required=True)
+def create_code(text: str, name: str) -> None:
+    file = BASE_DIR / "vote" / "static" / f"{name}.png"
+    code = segno.make_qr(text)
+    code.save(str(file), scale=10, light="#F3F4F6", dark="#2E333D")

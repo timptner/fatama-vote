@@ -5,6 +5,19 @@
 {% block content %}
 <h3 class="title">{{ poll.subject }}</h3>
 
+<article class="message is-info">
+    <div class="message-header">
+        <p>{{ poll.type }} Abstimmung</p>
+    </div>
+    <div class="message-body">
+        {% if poll.type == "Geheim" %}
+            Diese Abstimmung ist <strong>{{ poll.type }}</strong>. Bitte verwende deine anonyme Transaktionsliste.
+        {% else %}
+            Diese Abstimmung ist <strong>{{ poll.type }}</strong>. Bitte verwende deine namentliche Transaktionsliste.
+        {% endif %}
+    </div>
+</article>
+
 <form method="post">
     <div class="field">
         <label class="label" for="token">Token</label>

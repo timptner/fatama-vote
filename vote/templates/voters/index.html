@@ -1,20 +1,25 @@
 {% extends "base.html" %}
+
 {% block content %}
     <h3 class="title">
         {% block title %}
             Wähler
         {% endblock title %}
     </h3>
+
     <div class="block is-clearfix">
         <a class="button is-link is-pulled-right"
-           href="{{ url_for("voters.create") }}">Neuer Wähler</a>
+           href="{{ url_for('voters.create',) }}">Neuer Wähler</a>
     </div>
+
     <table class="table is-fullwidth">
         <thead>
             <tr>
                 <th>ID</th>
                 <th>Name</th>
                 <th>Stimmen</th>
+                <th>Token</th>
+                <th>Aktion</th>
             </tr>
         </thead>
         <tbody>
@@ -29,10 +34,34 @@
                         {% endif %}
                     </td>
                     <td>{{ voter.weight }}</td>
+                    <td>
+                        {% if voter.count > 0 %}
+                            <a href="{{ url_for('voters.printable', voter_id=voter.id) }}">
+                                <span class="icon-text">
+                                    <span class="icon">
+                                        <i class="fa-solid fa-print"></i>
+                                    </span>
+                                    <span>Drucken</span>
+                                </span>
+                            </a>
+                        {% else %}
+                            <span class="icon has-text-danger">
+                                <i class="fa-solid fa-circle-xmark"></i>
+                            </span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{{ url_for('voters.create_tokens', voter_id=voter.id) }}">
+                            <span class="icon">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                            </span>
+                            <span>Token</span>
+                        </a>
+                    </td>
                 </tr>
             {% else %}
                 <tr>
-                    <td colspan="3">Keine Wähler vorhanden.</td>
+                    <td colspan="5">Keine Wähler vorhanden.</td>
                 </tr>
             {% endfor %}
         </tbody>
