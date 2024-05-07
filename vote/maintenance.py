@@ -16,8 +16,9 @@ def create_user(username: str, password: str) -> None:
         click.echo(click.style("Username can't be empty.", fg="red"), err=True)
         exit(1)
 
-    if any([char not in (string.ascii_lowercase + string.digits) for char in username.split()]):
-        click.echo(click.style("Username can only contain digits and ascii letters.", fg="red"), err=True)
+    if any([char not in (string.ascii_lowercase + string.digits) for char in username]):
+        msg = "Username can only contain digits and ascii letters."
+        click.echo(click.style(msg, fg="red"), err=True)
         exit(1)
 
     if not password:
@@ -25,7 +26,12 @@ def create_user(username: str, password: str) -> None:
         exit(1)
 
     special_chars = "*/:_-!?+"
-    if any([char not in (string.ascii_letters + string.digits + special_chars) for char in password.split()]):
+    if any(
+        [
+            char not in (string.ascii_letters + string.digits + special_chars)
+            for char in password
+        ]
+    ):
         msg = f"Password can only contain digits, ascii letters and '{special_chars}'."
         click.echo(click.style(msg, fg="red"), err=True)
         exit(1)
@@ -35,14 +41,14 @@ def create_user(username: str, password: str) -> None:
     try:
         database.execute(
             "INSERT INTO users (username, password) VALUES (?, ?)",
-            (username, generate_password_hash(password))
+            (username, generate_password_hash(password)),
         )
         database.commit()
     except database.IntegrityError:
         click.echo(click.style(f"User '{username}' already exists", fg="red"), err=True)
         exit(1)
 
-    click.echo(click.style("User created", fg="green"))
+    click.echo(click.style(f"User '{username}' created", fg="green"))
 
 
 def add_maintenance_commands(application) -> None:
