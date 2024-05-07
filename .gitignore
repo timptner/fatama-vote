@@ -4,6 +4,8 @@
 # Flask
 instance/
 vote/static/weight.svg
+vote/static/code.png
+dist/
 
 # PyCharm
 .idea/
