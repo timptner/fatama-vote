@@ -3,7 +3,16 @@ import functools
 import math
 
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, session, url_for, Response
+    Blueprint,
+    flash,
+    g,
+    redirect,
+    render_template,
+    request,
+    session,
+    url_for,
+    Response,
+    current_app,
 )
 from matplotlib.figure import Figure
 from typing import Any
@@ -22,9 +31,7 @@ blueprint = Blueprint("voters", __name__, url_prefix="/voters")
 @login_required
 def index() -> str:
     database = get_database()
-    voters = database.execute(
-        "SELECT * FROM voters"
-    ).fetchall()
+    voters = database.execute("SELECT * FROM voters").fetchall()
     return render_template("voters/index.html", voters=voters)
 
 
@@ -87,8 +94,7 @@ def create() -> str | Response:
         else:
             database = get_database()
             database.execute(
-                "INSERT INTO voters (name, weight)"
-                " VALUES (?, ?)",
+                "INSERT INTO voters (name, weight) VALUES (?, ?)",
                 (name, weight),
             )
             database.commit()

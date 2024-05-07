@@ -3,7 +3,7 @@ import locale
 
 from flask import Flask
 
-locale.setlocale(locale.LC_ALL, 'de_DE.UTF-8')
+locale.setlocale(locale.LC_ALL, "de_DE.UTF-8")
 
 
 def create_app(test_config=None) -> Flask:
@@ -24,19 +24,24 @@ def create_app(test_config=None) -> Flask:
         pass
 
     from . import database
+
     database.init_application(application)
 
     from . import maintenance
+
     maintenance.add_maintenance_commands(application)
 
     from . import authentication
+
     application.register_blueprint(authentication.blueprint)
 
     from . import polls
+
     application.register_blueprint(polls.blueprint)
     application.add_url_rule("/", endpoint="index")
 
     from . import voters
+
     application.register_blueprint(voters.blueprint)
     application.cli.add_command(voters.plot_weight_curve)
 
