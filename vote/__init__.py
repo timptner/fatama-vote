@@ -38,5 +38,6 @@ def create_app(test_config=None) -> Flask:
 
     from . import voters
     application.register_blueprint(voters.blueprint)
+    application.cli.add_command(voters.plot_weight_curve)
 
     return application

@@ -1,15 +1,21 @@
+import click
 import functools
+import math
 
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, session, url_for, Response
 )
+from matplotlib.figure import Figure
 from typing import Any
 from werkzeug.security import check_password_hash
+from pathlib import Path
 
 from vote.authentication import login_required
 from vote.database import get_database
 
-blueprint = Blueprint('voters', __name__, url_prefix="/voters")
+BASE_DIR = Path(__file__).parent.parent
+
+blueprint = Blueprint("voters", __name__, url_prefix="/voters")
 
 
 @blueprint.route("/")
@@ -20,6 +26,38 @@ def index() -> str:
         "SELECT * FROM voters"
     ).fetchall()
     return render_template("voters/index.html", voters=voters)
+
+
+def get_weight(students: int) -> int:
+    weight = 4
+
+    if 1000 <= students:
+        n = min(students, 5000) - 999
+        weight += math.ceil(n / 500)
+
+    if 6000 <= students:
+        n = min(students, 10000) - 5999
+        weight += math.ceil(n / 1000)
+
+    return weight
+
+
+@click.command("plot-weight")
+def plot_weight_curve() -> None:
+    fig = Figure(figsize=(16, 9))
+    ax = fig.subplots()
+
+    x = range(1, 20000)
+    y = [get_weight(n) for n in x]
+
+    ax.plot(x, y)
+
+    ax.set_xlabel("Studenten")
+    ax.set_ylabel("Stimmen")
+
+    click.echo(click.style("Diagram erstellt.", fg="green"))
+    file = BASE_DIR / "instance" / "weight.svg"
+    fig.savefig(file, format="svg")
 
 
 @blueprint.route("/create/", methods=("GET", "POST"))
