@@ -34,6 +34,10 @@
                     Abstimmungen
                 </a>
 
+                <a class="navbar-item" href="{{ url_for('voters.info') }}">
+                    Auskunft
+                </a>
+
                 {% if g.user %}
                 <a class="navbar-item" href="{{ url_for('voters.index') }}">
                     Wähler

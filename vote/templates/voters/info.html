@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h3 class="title">{% block title %}Informationen zu Wähler{% endblock %}</h3>
+
+<div class="block">
+    <form method="post">
+        <div class="field">
+            <label class="label" for="voter_id">Wähler-ID</label>
+
+            <div class="control">
+                <input class="input" type="number" name="voter_id" id="voter_id" min="1" required />
+            </div>
+        </div>
+
+        <div class="field is-grouped">
+            <div class="control">
+                <button class="button is-link" type="submit">Anfordern</button>
+            </div>
+            <div class="control">
+                <a class="button is-link is-light" href="{{ url_for('index') }}">Abbrechen</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+{% if voter %}
+    <div class="box has-background-light">
+        {{ voter|tojson() }}
+    </div>
+{% endif %}
+
+{% endblock content %}

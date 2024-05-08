@@ -31,6 +31,41 @@ BASE_DIR = Path(__file__).parent.parent
 blueprint = Blueprint("voters", __name__, url_prefix="/voters")
 
 
+@blueprint.route("/info/", methods=("GET", "POST"))
+def info() -> str:
+    voter = None
+
+    if request.method == "POST":
+        voter_id = request.form["voter_id"]
+
+        error = None
+
+        if voter_id is None:
+            error = "Wähler-ID wird benötigt."
+        else:
+            database = get_database()
+            voter_raw = database.execute(
+                "SELECT * FROM voters WHERE id = ?",
+                (voter_id,),
+            ).fetchone()
+            if voter_raw:
+                voter = {
+                    "id": voter_raw["id"],
+                    "name": voter_raw["name"],
+                    "weight": voter_raw["weight"],
+                }
+
+        if voter is None:
+            error = "Unbekannte Wähler-ID."
+
+        if error is not None:
+            flash(error)
+        else:
+            pass
+
+    return render_template("voters/info.html", voter=voter)
+
+
 @blueprint.route("/")
 @login_required
 def index() -> str:
