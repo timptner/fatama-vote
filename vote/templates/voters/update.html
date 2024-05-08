@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h3 class="title">
+        {% block title %}
+            Wähler bearbeiten
+        {% endblock title %}
+    </h3>
+    <h5 class="subtitle">ID {{ voter.id }}</h5>
+
+    <div class="block">
+        <form method="post">
+            <div class="field">
+                <label class="label" for="name">Name</label>
+                <div class="control">
+                    <input class="input"
+                           type="text"
+                           name="name"
+                           id="name"
+                           value="{{ voter.name }}"
+                           maxlength="{{ validation.name_max }}" />
+                </div>
+                <p class="help">Für ein anonymes Konto bitte freilassen.</p>
+            </div>
+
+            <div class="field">
+                <label class="label" for="weight">Stimmen</label>
+                <div class="control">
+                    <input class="input"
+                           type="number"
+                           name="weight"
+                           id="weight"
+                           value="{{ voter.weight }}"
+                           min="{{ validation.weight_min }}"
+                           min="{{ validation.weight_max }}"
+                           required />
+                </div>
+            </div>
+
+            <div class="field is-grouped">
+                <div class="control">
+                    <button class="button is-link" type="submit">Aktualisieren</button>
+                </div>
+                <div class="control">
+                    <a class="button is-link is-light" href="{{ url_for("voters.index") }}">Abbrechen</a>
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock content %}

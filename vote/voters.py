@@ -161,6 +161,66 @@ def create() -> str | Response:
     return render_template("voters/create.html", validation=validation)
 
 
+@blueprint.route("/<int:voter_id>/update/", methods=("GET", "POST"))
+@login_required
+def update(voter_id: int) -> str | Response:
+    name_max_length = 250
+    weight_min = 1
+    weight_max = 20
+
+    database = get_database()
+    voter = database.execute(
+        "SELECT * FROM voters WHERE id = ?",
+        (voter_id,),
+    ).fetchone()
+
+    if voter is None:
+        abort(404, "Wähler mit dieser ID existiert nicht.")
+
+    if request.method == "POST":
+        name = request.form.get("name", "").strip()
+        weight = int(request.form["weight"])
+
+        error = None
+
+        if len(name) > name_max_length:
+            error = f"Name darf maximal {name_max_length} Zeichen lang sein."
+
+        if name == "" and voter["name"] != "":
+            error = "Namentlicher Wähler kann nicht anonymisiert werden."
+
+        if name != "" and voter["name"] == "":
+            error = "Anonyme Wähler können nicht namentlich gemacht werden."
+
+        if weight < weight_min:
+            error = f"Die Anzahl der Stimmen muss mindestens {weight_min} betragen."
+
+        if weight > weight_max:
+            error = f"Die Anzahl der Stimmen darf maximal {weight_max} betragen."
+
+        if name == "" and weight != 1:
+            error = "Anonyme Wähler müssen 1 Stimme haben."
+
+        if error is not None:
+            flash(error)
+        else:
+            database = get_database()
+            database.execute(
+                "UPDATE voters SET name = ?, weight = ? WHERE id = ?",
+                (name, weight, voter_id),
+            )
+            database.commit()
+            flash("Wähler aktualisiert.")
+            return redirect(url_for("voters.index"))
+
+    validation = {
+        "name_max": name_max_length,
+        "weight_min": weight_min,
+        "weight_max": weight_max,
+    }
+    return render_template("voters/update.html", validation=validation, voter=voter)
+
+
 def get_token() -> str:
     chars = string.ascii_uppercase + string.digits
     token = [secrets.choice(chars) for n in range(6)]

@@ -51,11 +51,19 @@
                         {% endif %}
                     </td>
                     <td>
-                        <a href="{{ url_for('voters.create_tokens', voter_id=voter.id) }}">
+                        <a class="mr-3"
+                           href="{{ url_for('voters.create_tokens', voter_id=voter.id) }}">
                             <span class="icon">
                                 <i class="fa-solid fa-wand-magic-sparkles"></i>
                             </span>
                             <span>Token</span>
+                        </a>
+
+                        <a href="{{ url_for('voters.update', voter_id=voter.id) }}">
+                            <span class="icon">
+                                <i class="fa-solid fa-pen"></i>
+                            </span>
+                            <span>Bearbeiten</span>
                         </a>
                     </td>
                 </tr>
